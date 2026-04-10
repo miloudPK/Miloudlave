@@ -171,8 +171,10 @@ document.getElementById("appTitle").childNodes[0].textContent=t.salaryApp;
 document.getElementById("name").placeholder=t.name;
 document.getElementById("position").placeholder=t.job;
 document.getElementById("salary").placeholder=t.salaryLabel;
-document.getElementById("dailyLimit").placeholder="8";
-
+document.getElementById("dailyLimit").addEventListener("input", function(){
+  localStorage.setItem("dailyLimit", this.value);
+});
+    
 document.getElementById("loginUser").placeholder=t.user;
 document.getElementById("loginPass").placeholder=t.pass;
 document.getElementById("regUser").placeholder=t.user;
@@ -363,6 +365,28 @@ window.open(url);
 function goHome(){screen1.style.display="block";screen2.style.display="none";screen3.style.display="none";screen4.style.display="none";}
 function goWorkers(){screen1.style.display="none";screen2.style.display="block";screen3.style.display="none";screen4.style.display="none";renderWorkers();}
 function goSalary(){screen1.style.display="none";screen2.style.display="none";screen3.style.display="none";screen4.style.display="block";updateSalary();}
+
+window.onload=function(){
+currentUser=localStorage.getItem("loggedUser");
+
+// رجع dailyLimit محفوظ
+let savedLimit = localStorage.getItem("dailyLimit");
+if(savedLimit){
+  document.getElementById("dailyLimit").value = savedLimit;
+}
+
+if(currentUser){
+  loginScreen.style.display="none";
+  app.style.display="block";
+  renderWorkers();
+}
+
+applyLanguage();
+}
+
+
+document.getElementById("dailyLimit").placeholder="8";
+
 
 window.onload=function(){
 currentUser=localStorage.getItem("loggedUser");
