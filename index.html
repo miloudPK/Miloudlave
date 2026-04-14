@@ -187,6 +187,25 @@ color:white;
 </thead>
 <tbody id="salaryTable"></tbody>
 </table>
+    <div class="report-card">
+<div class="report-title">📊 المجموع العام</div>
+
+<div class="month-line">
+<span>👷 مجموع الأيام:</span>
+<span id="totalDays">0</span>
+</div>
+
+<div class="month-line">
+<span>⏱ مجموع الساعات:</span>
+<span id="totalHours">0</span>
+</div>
+
+<div class="month-line">
+<span>💰 مجموع:</span>
+<span id="totalMoney" class="money">0</span>
+</div>
+
+</div>
 <button onclick="downloadPDF()">PDF</button>
 </div>
 </div>
@@ -505,13 +524,17 @@ w[currentWorker].calendar[key]=w[currentWorker].calendar[key]||{};
 w[currentWorker].calendar[key].hours=parseFloat(v)||0;
 saveWorkers(w);
 }
-
 function updateSalary(){
 
 let w = getWorkers();
 salaryTable.innerHTML = "";
 
 let names = [], totals = [];
+
+// مجموع عام
+let totalDaysAll = 0;
+let totalHoursAll = 0;
+let totalMoneyAll = 0;
 
 // الشهر والسنة المختارين
 let m = parseInt(document.getElementById("month").value);
@@ -520,7 +543,6 @@ let y = parseInt(document.getElementById("year").value);
 w.forEach(x=>{
 let d = 0, h = 0;
 
-// نحسب غير الأيام ديال نفس الشهر
 Object.keys(x.calendar || {}).forEach(key=>{
     let parts = key.split("-");
     let km = parseInt(parts[0]);
@@ -534,6 +556,11 @@ Object.keys(x.calendar || {}).forEach(key=>{
 });
 
 let total = (d + (h / (x.dailyLimit || 8))) * x.salary;
+
+// نجمع العام
+totalDaysAll += d;
+totalHoursAll += h;
+totalMoneyAll += total;
 
 names.push(x.name);
 totals.push(total);
@@ -549,6 +576,11 @@ salaryTable.innerHTML += `
 </tr>`;
 });
 
+// عرض المجموع العام
+document.getElementById("totalDays").innerText = totalDaysAll;
+document.getElementById("totalHours").innerText = totalHoursAll;
+document.getElementById("totalMoney").innerText = totalMoneyAll.toFixed(2);
+
 // تحديث chart
 if(chart) chart.destroy();
 chart = new Chart(salaryChart,{
@@ -557,8 +589,8 @@ chart = new Chart(salaryChart,{
         labels:names,
         datasets:[{data:totals}]
     }
-});
-}
+})
+}   
 
 function downloadPDF(){
 const { jsPDF }=window.jspdf;
