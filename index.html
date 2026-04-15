@@ -593,23 +593,36 @@ chart = new Chart(salaryChart,{
 }   
 
 function downloadPDF(){
-const { jsPDF }=window.jspdf;
-let doc=new jsPDF();
-let w=getWorkers();
-let y=10;
 
-w.forEach(x=>{
+let text = "📊 تقرير العمال\n\n";
+
+getWorkers().forEach(x=>{
 let d=0,h=0;
+
 Object.values(x.calendar||{}).forEach(v=>{
 if(v.day===1)d++;
 h+=v.hours||0;
 });
+
 let total=(d+(h/(x.dailyLimit||8)))*x.salary;
-doc.text(`${x.name}`,10,y);y+=6;
-doc.text(`Total:${total.toFixed(2)}`,10,y);y+=10;
+
+text += "👷 الاسم: " + x.name + "\n";
+text += "📅 الأيام: " + d + "\n";
+text += "⏱ الساعات: " + h + "\n";
+text += "💰 المجموع: " + total.toFixed(2) + "\n";
+text += "----------------------\n";
 });
 
-doc.save("report.pdf");
+// إنشاء ملف
+let blob = new Blob([text], {type: "text/plain"});
+
+// إنشاء رابط تحميل
+let link = document.createElement("a");
+link.href = URL.createObjectURL(blob);
+link.download = "report.txt";
+
+// تشغيل التحميل
+link.click();
 }
 
 function goHome(){screen1.style.display="block";screen2.style.display="none";screen3.style.display="none";screen4.style.display="none";}
